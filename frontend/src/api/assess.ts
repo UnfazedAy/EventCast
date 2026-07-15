@@ -4,7 +4,15 @@ import type {
   AssessEventRequest,
 } from "../types/assessment";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "";
+function resolveApiBase(): string {
+  const raw = import.meta.env.VITE_API_URL?.trim() ?? "";
+  if (!raw) return "";
+
+  const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  return withProtocol.replace(/\/$/, "");
+}
+
+const API_BASE = resolveApiBase();
 
 export class AssessApiError extends Error {
   fieldErrors?: Record<string, string[]>;
