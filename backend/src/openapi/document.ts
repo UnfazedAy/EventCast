@@ -3,6 +3,7 @@ import {
   OpenApiGeneratorV3,
 } from "@asteasolutions/zod-to-openapi";
 import { z } from "../lib/zod";
+import { env } from "../config/env";
 import { assessEventSchema } from "../validators/event.validator";
 
 const eventProfileSchema = z
@@ -159,8 +160,24 @@ registry.registerPath({
   },
 });
 
-export function generateOpenApiDocument() {
+export function resolveOpenApiServerUrl(
+  protocol: string,
+  host: string | undefined,
+): string {
+  if (env.publicApiUrl) {
+    return env.publicApiUrl;
+  }
+
+  if (host) {
+    return `${protocol}://${host}`;
+  }
+
+  return "http://localhost:3000";
+}
+
+export function generateOpenApiDocument(serverUrl?: string) {
   const generator = new OpenApiGeneratorV3(registry.definitions);
+  const url = serverUrl ?? env.publicApiUrl ?? "http://localhost:3000";
 
   return generator.generateDocument({
     openapi: "3.0.3",
@@ -175,8 +192,10 @@ export function generateOpenApiDocument() {
     },
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Local development",
+        url,
+        description: url.includes("localhost")
+          ? "Local development"
+          : "Deployed API",
       },
     ],
     tags: [

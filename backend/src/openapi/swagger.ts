@@ -1,22 +1,38 @@
-import { Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import swaggerUi from "swagger-ui-express";
-import { generateOpenApiDocument } from "./document";
-
-const openApiDocument = generateOpenApiDocument();
+import {
+  generateOpenApiDocument,
+  resolveOpenApiServerUrl,
+} from "./document";
 
 export const swaggerRouter = Router();
 
-swaggerRouter.get("/openapi.json", (_req, res) => {
-  res.status(200).json(openApiDocument);
+function getServerUrlFromRequest(req: Request): string {
+  const forwardedProto = req.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const protocol = forwardedProto ?? req.protocol;
+  const host = req.get("x-forwarded-host") ?? req.get("host");
+
+  return resolveOpenApiServerUrl(protocol, host);
+}
+
+swaggerRouter.get("/openapi.json", (req, res) => {
+  res.status(200).json(generateOpenApiDocument(getServerUrlFromRequest(req)));
 });
 
 swaggerRouter.use(
   "/",
   swaggerUi.serve,
-  swaggerUi.setup(openApiDocument, {
-    customSiteTitle: "EventCast API Docs",
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  }),
+  (req: Request, res: Response, next: NextFunction) => {
+    const setup = swaggerUi.setup(
+      generateOpenApiDocument(getServerUrlFromRequest(req)),
+      {
+        customSiteTitle: "EventCast API Docs",
+        swaggerOptions: {
+          persistAuthorization: true,
+        },
+      },
+    );
+
+    setup(req, res, next);
+  },
 );
