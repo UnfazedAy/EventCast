@@ -15,12 +15,41 @@ The result includes a **0–100 score**, a **rating** (Excellent / Good / Fair /
 
 ---
 
+## Screenshots
+
+### Web app — homepage
+
+The assessment form: enter an event name, location, and date to check weather suitability.
+
+![EventCast homepage](./screenshots/homepage.png)
+
+### Web app — assessment result
+
+Score, rating, weather stats, risks, and recommendations after submitting an event.
+
+![EventCast assessment result](./screenshots/result.png)
+
+### Web app — mobile view
+
+Responsive layout on smaller screens.
+
+![EventCast mobile view](./screenshots/mobile-view.png)
+
+### API documentation
+
+Interactive Swagger UI for exploring and testing endpoints.
+
+![EventCast API documentation](./screenshots/api-doc.png)
+
+---
+
 ## Repository structure
 
 ```
 EventCast/
 ├── backend/          # Express API, suitability engine, OpenAPI docs
 ├── frontend/         # React + Vite single-page UI
+├── screenshots/      # App and API documentation screenshots
 └── README.md         # This file
 ```
 
