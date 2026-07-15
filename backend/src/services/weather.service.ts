@@ -54,7 +54,7 @@ export class WeatherService {
     );
 
     if (!dailyForecast) {
-      throw new AppError(404, "Weather forecast not found for the given date");
+      throw new AppError(404, "Weather forecast not found for the given date, Try again with a different date not more than 7 days from today");
     }
 
     return {
